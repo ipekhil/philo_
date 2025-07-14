@@ -6,7 +6,7 @@
 /*   By: hiipek <hiipek@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 20:14:10 by hiipek            #+#    #+#             */
-/*   Updated: 2025/07/13 21:25:25 by hiipek           ###   ########.fr       */
+/*   Updated: 2025/07/14 19:14:01 by hiipek           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,6 @@ int	init_philos(t_data *data)
 		pthread_mutex_init(&data->philos[i].meal_lock, NULL);
 		data->philos[i].id = i + 1;
 		data->philos[i].meals_eaten = 0;
-		pthread_mutex_lock(&data->philos[i].meal_lock);
-		data->philos[i].last_meal_time = get_timestamp();
-		pthread_mutex_unlock(&data->philos[i].meal_lock);
 		data->philos[i].data = data;
 		data->philos[i].left_fork = &data->forks[i];
 		data->philos[i].right_fork = &data->forks[(i + 1) % data->philo_count];

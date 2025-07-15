@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiipek <hiipek@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hilalipek <hilalipek@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 20:14:21 by hiipek            #+#    #+#             */
-/*   Updated: 2025/07/14 19:15:31 by hiipek           ###   ########.fr       */
+/*   Updated: 2025/07/15 02:42:40 by hilalipek        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,10 @@ int	philo_eat(t_philo *philo)
 
 void	single_philo(t_philo *philo)
 {
+	if (control_dead(philo->data))
+		return ;
 	pthread_mutex_lock(philo->left_fork);
 	print_status(philo, "has taken a fork");
-	if (control_dead(philo->data))
-	{
-		pthread_mutex_unlock(philo->left_fork);
-		return ;
-	}
 	pthread_mutex_unlock(philo->left_fork);
 	return ;
 }
@@ -130,7 +127,7 @@ int check_dead(t_data *data)
 	i = 0;
 	while (i < data->philo_count)
 	{
-		if(get_timestamp() - get_last_meal_time(&data->philos[i]) >= data->time_to_die)
+		if(get_timestamp() - get_last_meal_time(&data->philos[i]) > data->time_to_die)
 		{		
 			pthread_mutex_lock(&data->death_check_mutex);
 			data->dead_flag = true;
@@ -156,9 +153,14 @@ void	*monitor_philos(void *arg)
 		if (data->must_eat > 0)
 		{
 			if (check_all_eaten(data))
+			{
+				pthread_mutex_lock(&data->death_check_mutex);
+				data->dead_flag = true;
+				pthread_mutex_unlock(&data->death_check_mutex);
 				return (NULL);				
+			}
 		}
-		usleep(1000);
+		usleep(100);
 	}
 	return (NULL);
 }
